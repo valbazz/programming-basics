@@ -40,7 +40,7 @@ class Wheel {
       wheel = this.getInput(askUser.askWheel());
     } 
       
-    return this.capitalizeFirstLetter(wheel);       
+    return wheel;       
   }
   
   /** 
@@ -54,16 +54,6 @@ class Wheel {
     return list.includes(input) ? true : false;
   }
 
-  /** 
-   * Capitalizes the first letter of a string. 
-   * @param {string} word - Any lowercase word.
-   * @returns {string} The word passed as argument with the first letter capitalized.
-   */
-
-  static capitalizeFirstLetter(word) {
-    const firstLetter = word.slice(0, 1).toUpperCase(); 
-    return firstLetter + word.slice(1); 
-  }
 }
 
 module.exports = Wheel;

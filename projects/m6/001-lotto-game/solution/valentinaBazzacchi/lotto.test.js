@@ -1,6 +1,7 @@
 const Bet = require("./bet");
 const Wheel = require("./wheel");
 const Numbers = require("./numbers");
+const Print = require("./print");
 const Ticket = require("./ticket");
 const Lotto = require("./index");
 
@@ -56,11 +57,6 @@ test('Expected "Wheel.checkInput" method to return true if a value included in t
 
 test('Expected "checkInput" method to return false if a value not included in the array is passed', () => {
     expect(Wheel.checkInput("livorno", Wheel.cities)).toBe(false);
-})
-
-// test capitalizeFirstLetter(string) static method 
-test('Expected "capitalizeFirstLetter" method to return a string with the first letter capitalized if I pass a lowercase string as argument', () => {
-    expect(Wheel.capitalizeFirstLetter("hello")).toBe("Hello");
 })
 
 // --------------- CLASS NUMBERS TESTS --------------- //
@@ -127,25 +123,32 @@ test('Expected the property "wheel" of the ticket2 is the same passed as argumen
     expect(ticket2.wheel).toBe("Roma");
 })
 
-// test calculateSpace(totalWidth, fixedCharsLength, stringLength) method
-test('Expected the "calculateSpace" method return a string whose length is equal to the difference between the first parameter minus the second and the third parameters', () => {
-    const ticket3 = new Ticket("Napoli", [13, 56, 98, 75], "terno");
-    const blankString = ticket3.calculateSpace(34, 10, ticket3.wheel.length);
-    expect(blankString.length).toBe(18);
-})
-
-test('Expected the "calculateSpace" method return a string whose length is equal to the difference between the first parameter minus the second and the third parameters', () => {
-    const ticket3 = new Ticket("Napoli", [13, 56, 98, 75], "terno");
-    const numStr = ticket3.numbers.join(" ");
-    const blankString = ticket3.calculateSpace(34, 10, numStr.length);
-    expect(blankString.length).toBe(13);
-})
-
 // test ticket class "id" property
 test('Expected the id property to be correctly assigned to a ticket instance', () => {
     const ticket4 = new Ticket("Firenze", [13, 56, 98], "ambo");
     ticket4.id = 4;
     expect(ticket4.id).toBe(4);
+})
+
+// --------------- CLASS PRINT TEST --------------- //
+
+// test calculateSpace(totalWidth, fixedCharsLength, stringLength) method
+test('Expected the "calculateSpace" method return a string whose length is equal to the difference between the first parameter minus the second and the third parameters', () => {
+    const ticket3 = new Ticket("Napoli", [13, 56, 98, 75], "terno");
+    const blankString = Print.calculateSpace(34, 10, ticket3.wheel.length);
+    expect(blankString.length).toBe(18);
+})
+
+// test capitalizeFirstLetter(string) static method 
+test('Expected "capitalizeFirstLetter" method to return a string with the first letter capitalized if I pass a lowercase string as argument', () => {
+    expect(Print.capitalizeFirstLetter("hello")).toBe("Hello");
+})
+
+test('Expected the "calculateSpace" method return a string whose length is equal to the difference between the first parameter minus the second and the third parameters', () => {
+    const ticket3 = new Ticket("Napoli", [13, 56, 98, 75], "terno");
+    const numStr = ticket3.numbers.join(" ");
+    const blankString = Print.calculateSpace(34, 10, numStr.length);
+    expect(blankString.length).toBe(13);
 })
 
 // --------------- CLASS LOTTO TEST --------------- //
