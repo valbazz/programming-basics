@@ -3,6 +3,8 @@ const Bet = require("./bet");
 const Wheel = require("./wheel");
 const Numbers = require("./numbers");
 const Ticket = require("./ticket");
+const Extraction = require("./extraction");
+const Win = require("./win");
 const Print = require("./print");
 
 
@@ -99,11 +101,22 @@ class Lotto {
 
         Print.printMessage("+------------------+\n| PLAY LOTTO GAME! |\n+------------------+\n");
 
+        // Play Tickets
         const ticketsAmount = this.getTicketsAmount();
-
         const tickets = this.generateTickets(ticketsAmount);
-
         Print.printTickets(tickets);
+        
+        // Extraxtion
+        const extraction = Extraction.getExtractions(Wheel.cities);
+        Print.printMessage(Print.designExtraction(extraction));
+
+        // Winning
+        const winningTickets = Win.getWinningTickets(tickets, extraction);
+        if (winningTickets.length > 1) Print.printMessage(`\n\nYOU HAVE ${winningTickets.length} WINNING TICKETS!\n`);
+        if (winningTickets.length === 1) Print.printMessage(`\n\nYOU HAVE ONE WINNING TICKET!\n`);
+        if (winningTickets.length === 0) Print.printMessage("\n\nYOU HAVE NO WINNING TICKETS!");
+        Print.printTickets(winningTickets);
+        
     }
 
 
@@ -111,7 +124,7 @@ class Lotto {
 
 }
 
-Lotto.startLotto();
+// Lotto.startLotto();
 
 module.exports = Lotto;
 

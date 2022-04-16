@@ -3,6 +3,8 @@ const Wheel = require("./wheel");
 const Numbers = require("./numbers");
 const Print = require("./print");
 const Ticket = require("./ticket");
+const Extraction = require("./extraction");
+const Win = require("./win");
 const Lotto = require("./index");
 
 // ---------------   CLASS BET TESTS --------------- //
@@ -182,3 +184,116 @@ test('Expected "Lotto.getInput" method to return undefined if a string is passed
     const amount = Lotto.getInput("hello");
     expect(amount).toBe(undefined);
 })
+
+// --------------- CLASS EXTRACTION TEST --------------- //
+
+// test getSingleExtraction() static method
+test('Expected "getSingleExtraction" method to return an array', () => {
+    const numDrawn = Extraction.getSingleExtraction();
+    expect(Array.isArray(numDrawn)).toBe(true);
+})
+
+test('Expected "getSingleExtraction" method to return five unique numbers', () => {
+    const numDrawn = Extraction.getSingleExtraction();
+    const uniqueNum = new Set(numDrawn);
+    expect(uniqueNum.size).toBe(5);
+})
+
+// ------------------ CLASS WIN TEST ------------------ //
+
+// test checkWinningTicket() static method on a "city" wheel 
+test('Expected the "checkWinningTicket" method return true if by checking the numbers drawn on the played wheel the bet has been reached', () => {
+    const ticket = new Ticket("napoli", [13, 56, 98, 75], "terno");
+    const extraction = {milano: [2, 15, 17, 42, 33], roma: [23, 54, 77, 3, 19], napoli: [56, 98, 75, 23, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(true);
+})
+
+test('Expected that the "checkWinningTicket" method returns false if the numbers played were drawn on another wheel', () => {
+    const ticket = new Ticket("napoli", [13, 56, 98, 75], "terno");
+    const extraction = {milano: [13, 66, 98, 75, 22], roma: [23, 54, 77, 3, 19], napoli: [55, 88, 72, 2, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(false);
+})
+
+test('Expected the "checkWinningTicket" method return false if by checking the numbers drawn on the played wheel the bet has not been reached', () => {
+    const ticket = new Ticket("napoli", [13, 56, 98, 75], "quaterna");
+    const extraction = {milano: [2, 15, 17, 42, 33], roma: [23, 54, 77, 3, 19], napoli: [56, 98, 75, 2, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(false);
+})
+
+// test checkWinningTicket() static method on the wheel "tutte"
+test('Expected the "checkWinningTicket" method return true if by checking all the numbers drawn the bet has been reached (when the wheel played is "tutte")', () => {
+    const ticket = new Ticket("tutte", [13, 56, 98, 75], "terno");
+    const extraction = {milano: [2, 15, 17, 13, 33], roma: [13, 54, 77, 3, 98], napoli: [12, 52, 75, 2, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(true);
+})
+
+test('Expected the "checkWinningTicket" method return false if by checking all the numbers drawn the bet has not been reached (when the wheel played is "tutte")', () => {
+    const ticket = new Ticket("tutte", [13, 56, 98, 75], "terno");
+    const extraction = {milano: [2, 15, 56, 43, 33], roma: [13, 46, 77, 3, 19], napoli: [12, 52, 65, 2, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(false);
+})
+
+test('Expected the "checkWinningTicket" method return false when the same drawn number is repeated on different wheels but the bet has not been reached', () => {
+    const ticket = new Ticket("tutte", [13, 56, 98, 75], "ambo");
+    const extraction = {milano: [2, 25, 17, 13, 33], roma: [13, 54, 77, 3, 19], napoli: [13, 52, 77, 2, 64]};
+    expect(Win.checkWinningTicket(ticket, extraction)).toBe(false);
+})
+
+// test calcEqualNum() static method
+test('Expected the "calcEqualNum" method return the correct quantity of equal numbers between two lists of numbers', () => {
+    const ticketNum = [1, 2, 3, 4];
+    const drawnNum = [1, 2, 3, 4, 5];
+    expect(Win.calcEqualNum(ticketNum, drawnNum)).toBe(4);
+})
+
+test('Expected that the "calcEqualNum" method returns zero if between two lists of numbers there aren\'t equal numbers', () => {
+    const ticketNum = [1, 2, 3, 4];
+    const drawnNum = [5, 6, 7, 8, 9];
+    expect(Win.calcEqualNum(ticketNum, drawnNum)).toBe(0);
+})
+
+test('Expected the "calcEqualNum" method return the correct quantity of equal numbers if repeated numbers are passed as second argument', () => {
+    const ticketNum = [1, 2, 3, 4];
+    const drawnNum = [1, 1, 3, 4, 4, 5];
+    expect(Win.calcEqualNum(ticketNum, drawnNum)).toBe(3);
+})
+
+// test getWinningTickets() static method
+test('Expected the "getWinningTickets" method return a list of 1 winning tickets', () => {
+    const tickets = [{wheel: "napoli", numbers: [13, 56, 98, 75], bet: "quaterna"}, {wheel: "roma", numbers: [54, 46, 16], bet: "ambo"}];
+    const extraction = {napoli : [13, 56, 98, 75, 5], roma: [55, 46, 17, 3, 89]};
+    const winningTickets = Win.getWinningTickets(tickets, extraction);
+    expect(winningTickets.length).toBe(1);
+})
+
+test('Expected the "getWinningTickets" method return an empty list of winning tickets', () => {
+    Win.winningTickets = [];
+    const tickets = [{wheel: "napoli", numbers: [13, 56, 98, 75], bet: "quaterna"}, {wheel: "roma", numbers: [54, 46, 16], bet: "ambo"}];
+    const extraction = {napoli: [14, 56, 98, 75, 5], roma: [54, 48, 17, 3, 89]};
+    const winningTickets = Win.getWinningTickets(tickets, extraction);
+    expect(winningTickets.length).toBe(0);
+})
+
+test('Expected the "getWinningTickets" method return a list with the ticket played on the wheel "tutte"', () => {
+    const tickets = [{wheel: "napoli", numbers: [13, 56, 98, 75], bet: "quaterna"}, {wheel: "tutte", numbers: [54, 46, 16], bet: "ambo"}];
+    const extraction = {napoli: [16, 56, 98, 75, 5], roma: [54, 48, 17, 3, 89]};
+    const winningTickets = Win.getWinningTickets(tickets, extraction);
+    expect(winningTickets[0].wheel).toBe("tutte");
+})
+
+test('Expected the "getWinningTickets" method return a list with the ticket played on the wheel "napoli"', () => {
+    Win.winningTickets = [];
+    const tickets = [{wheel: "napoli", numbers: [13, 56, 98, 75], bet: "terno"}, {wheel: "roma", numbers: [54, 46, 16], bet: "ambo"}];
+    const extraction = {napoli: [13, 56, 98, 72, 5], roma: [54, 48, 17, 3, 89]};
+    const winningTickets = Win.getWinningTickets(tickets, extraction);
+    expect(winningTickets[0].wheel).toBe("napoli");
+})
+
+test('Expected the "getWinningTickets" method return an empty list of winning tickets', () => {
+    Win.winningTickets = [];
+    const tickets = [{wheel: "napoli", numbers: [13, 56, 98, 75], bet: "quaterna"}, {wheel: "tutte", numbers: [54, 46, 16], bet: "ambo"}];
+    const extraction = {napoli: [14, 54, 98, 75, 5], roma: [54, 48, 17, 3, 89]};
+    const winningTickets = Win.getWinningTickets(tickets, extraction);
+    expect(winningTickets.length).toBe(0);
+})
+
